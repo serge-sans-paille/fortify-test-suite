@@ -1,9 +1,10 @@
 PKGNAME=fortify-test-suite
 
-GCC=gcc
-CLANG=clang
-CFLAGS=-D_FORTIFY_SOURCE=1 -O1
+GCC ?= gcc
+CLANG ?= clang
+CFLAGS ?=-D_FORTIFY_SOURCE=1 -O1
 CFLAGS_STATIC=$(CFLAGS) -DSTATIC_CHECK -Werror
+
 
 TARGETS=test_memcpy test_memmove test_mempcpy test_memset test_snprintf test_sprintf test_stpcpy test_strcat test_strcpy test_strncat test_strncpy test_vsnprintf test_vsprintf
 
