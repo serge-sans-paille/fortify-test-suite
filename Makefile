@@ -1,9 +1,10 @@
 PKGNAME=fortify-test-suite
 
-GCC=gcc
-CLANG=clang
-CFLAGS=-D_FORTIFY_SOURCE=1 -O1
+GCC ?= gcc
+CLANG ?= clang
+CFLAGS ?=-D_FORTIFY_SOURCE=1 -O1
 CFLAGS_STATIC=$(CFLAGS) -DSTATIC_CHECK -Werror
+
 
 TARGETS=test_memcpy test_memmove test_mempcpy test_memset test_snprintf test_sprintf test_stpcpy test_strcat test_strcpy test_strncat test_strncpy test_vsnprintf test_vsprintf
 
@@ -17,7 +18,6 @@ check-clang:$(patsubst test_%,run_%.clang, $(TARGETS))
 test_memcpy:run_memcpy.gcc run_memcpy.clang
 test_memmove:run_memmove.gcc run_memmove.clang
 test_mempcpy:run_mempcpy.gcc run_mempcpy.clang
-export memset_WARN_COUNT = 2
 test_memset:run_memset.gcc run_memset.clang
 test_snprintf:run_snprintf.gcc run_snprintf.clang
 test_sprintf:run_sprintf.gcc run_sprintf.clang
@@ -36,11 +36,11 @@ run_%:test_%
 	@echo "$< OK"
 
 test_%.gcc:test_%.c
-	$(GCC) $(CFLAGS_STATIC) $< 2>&1 | grep -c ' error: ' | grep $${$*_WARN_COUNT:-1}
+	$(GCC) $(CFLAGS_STATIC) $< 2>&1 | grep ' error: '
 	$(GCC) $(CFLAGS) $< -o $@
 
 test_%.clang:test_%.c
-	$(CLANG) $(CFLAGS_STATIC) $< 2>&1 | grep -c ' error: ' | grep $${$*_WARN_COUNT:-1}
+	$(CLANG) $(CFLAGS_STATIC) $< 2>&1 | grep ' error: '
 	$(CLANG) $(CFLAGS) $< -o $@
 
 clean:
