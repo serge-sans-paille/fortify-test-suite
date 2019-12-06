@@ -4,6 +4,7 @@ GCC ?= gcc
 CLANG ?= clang
 CFLAGS ?=-D_FORTIFY_SOURCE=1 -O1
 CFLAGS_STATIC=$(CFLAGS) -DSTATIC_CHECK -Werror
+STATIC_CHECK ?= false
 
 
 TARGETS=test_memcpy test_memmove test_mempcpy test_memset test_snprintf test_sprintf test_stpcpy test_strcat test_strcpy test_strncat test_strncpy test_vsnprintf test_vsprintf
@@ -36,11 +37,11 @@ run_%:test_%
 	@echo "$< OK"
 
 test_%.gcc:test_%.c
-	$(GCC) $(CFLAGS_STATIC) $< 2>&1 | grep ' error: '
+	! $(STATIC_CHECK) || $(GCC) $(CFLAGS_STATIC) $< 2>&1 | grep ' error: '
 	$(GCC) $(CFLAGS) $< -o $@
 
 test_%.clang:test_%.c
-	$(CLANG) $(CFLAGS_STATIC) $< 2>&1 | grep ' error: '
+	! $(STATIC_CHECK) || $(CLANG) $(CFLAGS_STATIC) $< 2>&1 | grep ' error: '
 	$(CLANG) $(CFLAGS) $< -o $@
 
 clean:

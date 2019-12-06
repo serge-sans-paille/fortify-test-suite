@@ -21,4 +21,7 @@ To run the whole suite:
     # run all tests
     make check
 
+    # run only dynamic checks
+    make check STATIC_CHECK=false
+
 The makefile is relatively generic, if one wants to test another compiler...
