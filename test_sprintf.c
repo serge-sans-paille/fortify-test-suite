@@ -36,7 +36,7 @@
 int main(int argc, char ** argv) {
   char buffer[3];
 #ifdef STATIC_CHECK
-  sprintf(buffer, "%s", "hello");
+  sprintf(buffer, "hello");
 #endif
   // FIXME: no check for slen == 0
   sprintf(buffer, "!%d", 8 + argc);
