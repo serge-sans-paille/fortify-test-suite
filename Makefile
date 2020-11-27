@@ -1,7 +1,13 @@
 PKGNAME=fortify-test-suite
 
-CFLAGS ?=-D_FORTIFY_SOURCE=1 -O1
-CFLAGS_STATIC=$(CFLAGS) -DSTATIC_CHECK -Werror
+ifdef SYSROOT
+	USE_SYSROOT = -isysroot $(SYSROOT)
+else
+	USE_SYSROOT =
+endif
+
+DEFAULT_CFLAGS = $(CFLAGS) -D_FORTIFY_SOURCE -O1 $(USE_SYSROOT)
+CFLAGS_STATIC=$(DEFAULT_CFLAGS) -DSTATIC_CHECK -Werror
 STATIC_CHECK ?= false
 COMPILERS = gcc clang
 
@@ -40,7 +46,7 @@ run_%:test_%
 build-target = test_%.$(1):test_%.c; \
 	! $(STATIC_CHECK) || $(1) $(CFLAGS_STATIC) $< 2>&1 \
 		| grep ' error: '; \
-	$(1) $(CFLAGS) $$< -o $$@;
+	$(1) $(DEFAULT_CFLAGS) $$< -o $$@;
 
 $(call build-target,gcc)
 $(call build-target,clang)
