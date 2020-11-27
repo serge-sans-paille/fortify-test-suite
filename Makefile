@@ -15,19 +15,21 @@ check-target = check-$(1):$(patsubst test_%,run_%.$(1),$(TARGETS)); \
 $(call check-target,gcc)
 $(call check-target,clang)
 
-test_memcpy:run_memcpy.gcc run_memcpy.clang
-test_memmove:run_memmove.gcc run_memmove.clang
-test_mempcpy:run_mempcpy.gcc run_mempcpy.clang
-test_memset:run_memset.gcc run_memset.clang
-test_snprintf:run_snprintf.gcc run_snprintf.clang
-test_sprintf:run_sprintf.gcc run_sprintf.clang
-test_stpcpy:run_stpcpy.gcc run_stpcpy.clang
-test_strcat:run_strcat.gcc run_strcat.clang
-test_strcpy:run_strcpy.gcc run_strcpy.clang
-test_strncat:run_strncat.gcc run_strncat.clang
-test_strncpy:run_strncpy.gcc run_strncpy.clang
-test_vsnprintf:run_vsnprintf.gcc run_vsnprintf.clang
-test_vsprintf:run_vsnprintf.gcc run_vsnprintf.clang
+check-single = test-$(1):$(foreach c,$(COMPILERS),run_$(1).$(c))
+
+$(call check-single,memcpy)
+$(call check-single,memmove)
+$(call check-single,mempcpy)
+$(call check-single,memset)
+$(call check-single,snprintf)
+$(call check-single,sprintf)
+$(call check-single,stpcpy)
+$(call check-single,strcat)
+$(call check-single,strcpy)
+$(call check-single,strncat)
+$(call check-single,strncpy)
+$(call check-single,vsnprintf)
+$(call check-single,vsprintf)
 
 run_%:test_%
 	./$<
