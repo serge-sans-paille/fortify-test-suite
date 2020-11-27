@@ -1,20 +1,19 @@
 PKGNAME=fortify-test-suite
 
-GCC ?= gcc
-CLANG ?= clang
 CFLAGS ?=-D_FORTIFY_SOURCE=1 -O1
 CFLAGS_STATIC=$(CFLAGS) -DSTATIC_CHECK -Werror
 STATIC_CHECK ?= false
-
+COMPILERS = gcc clang
 
 TARGETS=test_memcpy test_memmove test_mempcpy test_memset test_snprintf test_sprintf test_stpcpy test_strcat test_strcpy test_strncat test_strncpy test_vsnprintf test_vsprintf
 
-check:check-gcc check-clang
+check:$(patsubst %,check-%,$(COMPILERS))
 
-check-gcc:$(patsubst test_%,run_%.gcc, $(TARGETS))
-	@echo "===== GCC OK ====="
-check-clang:$(patsubst test_%,run_%.clang, $(TARGETS))
-	@echo "===== CLANG OK ====="
+check-target = check-$(1):$(patsubst test_%,run_%.$(1),$(TARGETS)); \
+	@echo "===== $$@ OK ====="
+
+$(call check-target,gcc)
+$(call check-target,clang)
 
 test_memcpy:run_memcpy.gcc run_memcpy.clang
 test_memmove:run_memmove.gcc run_memmove.clang
@@ -36,16 +35,16 @@ run_%:test_%
 	! ./$< 1 1 1 1
 	@echo "$< OK"
 
-test_%.gcc:test_%.c
-	! $(STATIC_CHECK) || $(GCC) $(CFLAGS_STATIC) $< 2>&1 | grep ' error: '
-	$(GCC) $(CFLAGS) $< -o $@
+build-target = test_%.$(1):test_%.c; \
+	! $(STATIC_CHECK) || $(1) $(CFLAGS_STATIC) $< 2>&1 \
+		| grep ' error: '; \
+	$(1) $(CFLAGS) $$< -o $$@;
 
-test_%.clang:test_%.c
-	! $(STATIC_CHECK) || $(CLANG) $(CFLAGS_STATIC) $< 2>&1 | grep ' error: '
-	$(CLANG) $(CFLAGS) $< -o $@
+$(call build-target,gcc)
+$(call build-target,clang)
 
 clean:
-	for target in $(TARGETS); do $(RM) $$target.gcc $$target.clang ; done
+	for target in $(TARGETS); do $(RM) $(patsubst %,$$target.%,$(COMPILERS)) ; done
 	$(RM) $(PKGNAME).tgz
 
 dist: $(PKGNAME).tgz
