@@ -6,6 +6,12 @@ else
 	USE_SYSROOT =
 endif
 
+ifeq (1,$(V))
+	Q =
+else
+	Q = @
+endif
+
 DEFAULT_CFLAGS = $(CFLAGS) -O1 $(USE_SYSROOT)
 CFLAGS_STATIC=$(DEFAULT_CFLAGS) -DSTATIC_CHECK -Werror
 STATIC_CHECK ?= false
@@ -43,10 +49,10 @@ run_%:$(foreach l,$(FORTIFY_LEVELS),runone_%_$(l))
 	true
 
 runone_%:test_%
-	./$<
-	! ./$< 1 1 1
-	! ./$< 1 1 1 1
-	@echo "$< OK"
+	$(Q)./$<
+	$(Q)! ./$< 1 1 1
+	$(Q)! ./$< 1 1 1 1
+	$(Q)echo "$< OK"
 
 static-build-cmd = ! $$(STATIC_CHECK) || $(1) \
 		-D_FORTIFY_SOURCE=$(2) $$(CFLAGS_STATIC) $$< 2>&1 \
@@ -55,7 +61,7 @@ static-build-cmd = ! $$(STATIC_CHECK) || $(1) \
 build-cmd = $(1) -D_FORTIFY_SOURCE=$(2) $$(DEFAULT_CFLAGS) $$< -o $$@
 
 build-target = test_%.$(1)_$(2):test_%.c; \
-	$(call static-build-cmd,$(1),$(2)) \
+	$(Q)$(call static-build-cmd,$(1),$(2)) \
 	$(call build-cmd,$(1),$(2))
 
 $(call build-target,gcc,1)
