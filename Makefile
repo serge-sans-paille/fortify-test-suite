@@ -62,12 +62,12 @@ $(foreach c,$(COMPILERS),$(foreach l,$(FORTIFY_LEVELS),$(eval \
 	$(call build-target,$(c),$(l)))))
 
 clean:
-	for target in $(TARGETS); do $(RM) $(patsubst %,$$target.%,$(COMPILERS)) ; done
+	for target in $(TARGETS); do $(RM) $(patsubst %,test_$$target.%*,$(COMPILERS)) ; done
 	$(RM) $(PKGNAME).tgz
 
 dist: $(PKGNAME).tgz
 
-$(PKGNAME).tgz: $(patsubst %,%.c, $(TARGETS)) Makefile README.rst
+$(PKGNAME).tgz: $(patsubst %,test_%.c, $(TARGETS)) Makefile README.rst
 	$(RM) -rf $(PKGNAME)
 	mkdir $(PKGNAME)
 	cp $^ $(PKGNAME)/
