@@ -2,10 +2,10 @@ Test suite for __builtin_*_chk
 ==============================
 
 A collection of tests for compiler who wants to support glibc's fortify feature,
-the one triggered by ``-D_FORTIFY_SOURCE=1``.
+the one triggered by `-D_FORTIFY_SOURCE=1` or `-D_FORTIFY_SOURCE=2`.
 
 This tests compile time and runtime behavior of a few functions that involve
-call to compiler builtins like ``__builtin_memcpy_chk``.
+call to compiler builtins like `__builtin_memcpy_chk`.
 
 To run the whole suite:
 
@@ -24,4 +24,9 @@ To run the whole suite:
     # run only dynamic checks
     make check STATIC_CHECK=false
 
-The makefile is relatively generic, if one wants to test another compiler...
+    # run tests for specific functions, e.g. memcpy
+    make test-memcpy
+
+To test another compiler, add its name in the `COMPILERS` variable in the
+Makefile and ensure that it is in `PATH`; then for a compiler `CC`, its tests
+can be invoked using `make check-CC`.
