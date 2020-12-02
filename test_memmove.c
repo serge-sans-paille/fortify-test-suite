@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdio.h>
+#include "test_common.c"
 
 /* reference implementation
  *
@@ -19,15 +20,21 @@
  * }
  */
 
+
 int main(int argc, char ** argv) {
   char buffer[3] = {0};
+  int ret = 0;
 #ifdef STATIC_CHECK
   memmove(buffer, "yo", 4);
 #endif
   memmove(buffer, "yo", 3);
   puts(buffer);
-  memmove(buffer, "yo", argc);
+  if (argc > 1) {
+    CHK_FAIL_START
+    memmove(buffer, "yo", argc);
+    CHK_FAIL_END
+  }
   puts(buffer);
-  return 0;
+  return ret;
 }
 

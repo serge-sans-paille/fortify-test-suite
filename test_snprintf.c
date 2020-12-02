@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdio.h>
+#include "test_common.c"
 
 /* reference implementation
  *
@@ -31,12 +32,17 @@
 
 int main(int argc, char ** argv) {
   char buffer[3] = {0};
+  int ret = 0;
 #ifdef STATIC_CHECK
   snprintf(buffer, 4, "%d", argc);
 #endif
   snprintf(buffer, 3, "%d", argc);
   puts(buffer);
-  snprintf(buffer, argc, "%d", argc);
+  if (argc > 1) {
+    CHK_FAIL_START
+    snprintf(buffer, argc, "%d", argc);
+    CHK_FAIL_END
+  }
   puts(buffer);
   return 0;
 }

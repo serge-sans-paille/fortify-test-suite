@@ -1,6 +1,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include "test_common.c"
 
 /* reference implementation
  * int
@@ -26,6 +27,7 @@
 
 int aux(int argc, char ** argv, ...) {
   char buffer[3] = {0};
+  int ret = 0;
   va_list ap;
   va_start(ap, argv);
 
@@ -35,10 +37,14 @@ int aux(int argc, char ** argv, ...) {
 #endif
   vsnprintf(buffer, 3, "%d", ap);
   puts(buffer);
-  vsnprintf(buffer, argc, "%d", ap);
+  if (argc > 1) {
+    CHK_FAIL_START
+    vsnprintf(buffer, argc, "%d", ap);
+    CHK_FAIL_END
+  }
   puts(buffer);
   va_end(ap);
-  return 0;
+  return ret;
 }
 
 int main(int argc, char ** argv) {
