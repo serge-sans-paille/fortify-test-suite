@@ -1,6 +1,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "test_common.c"
 
 /* reference implementation
  *
@@ -34,14 +35,19 @@
  */
 
 int main(int argc, char ** argv) {
+  int ret = 0;
   char buffer[3];
 #ifdef STATIC_CHECK
   sprintf(buffer, "hello");
 #endif
   // FIXME: no check for slen == 0
-  sprintf(buffer, "!%d", 8 + argc);
-  puts(buffer);
   sprintf(buffer, "%d", argc);
   puts(buffer);
-  return 0;
+  if (argc > 1) {
+    CHK_FAIL_START
+    sprintf(buffer, "!%d", 8 + argc);
+    CHK_FAIL_END
+  }
+  puts(buffer);
+  return ret;
 }

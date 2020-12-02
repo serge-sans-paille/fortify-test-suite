@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdio.h>
+#include "test_common.c"
 
 /* reference implementation
  *
@@ -21,14 +22,17 @@
 
 int main(int argc, char ** argv) {
   char buffer[3] = {0};
+  int ret = 0;
 #ifdef STATIC_CHECK
   strncpy(buffer, "bonjour", 4);
 #endif
 
-  {
+  if (argc > 1) {
+    CHK_FAIL_START
     char buffer[3] = {0};
     strncpy(buffer, "bonjour", argc);
     puts(buffer);
+    CHK_FAIL_END
   }
 
   {
@@ -36,5 +40,5 @@ int main(int argc, char ** argv) {
     strncpy(buffer, "yo", 3);
     puts(buffer);
   }
-  return 0;
+  return ret;
 }

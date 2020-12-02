@@ -1,6 +1,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "test_common.c"
 
 /* reference implementation
  *
@@ -53,18 +54,22 @@ int main(int argc, char ** argv) {
   char from[] = "bonjour";
   if(argc == 5)
   {
+    CHK_FAIL_START
     char buffer[3] = {'a', 'b', 'c'};
     strcat(buffer, from);
     puts(buffer);
+    CHK_FAIL_END
   }
 
   from[argc] = 0;
 
   if(argc != 5)
   {
+    CHK_FAIL_START
     char buffer[3] = {0};
     strcat(buffer, from);
     puts(buffer);
+    CHK_FAIL_END
   }
 
 

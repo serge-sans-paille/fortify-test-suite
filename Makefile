@@ -20,7 +20,7 @@ FORTIFY_LEVELS = 1 2
 
 TARGETS=memcpy memmove mempcpy memset snprintf sprintf stpcpy strcat strcpy strncat strncpy vsnprintf vsprintf
 
-check:$(patsubst %,check-%,$(COMPILERS))
+check:$(patsubst %,check-%,$(COMPILERS)) test_common.c
 
 define check-target =
 check-$(1):$(patsubst %,run_%.$(1),$(TARGETS))
@@ -37,12 +37,12 @@ endef
 $(foreach t,$(TARGETS),$(eval $(call check-single,$(t))))
 
 run_%:$(foreach l,$(FORTIFY_LEVELS),runone_%_$(l))
-	true
+	@true
 
 runone_%:test_%
-	$(Q)./$<
-	$(Q)! ./$< 1 1 1
-	$(Q)! ./$< 1 1 1 1
+	$(Q)./$< > /dev/null
+	$(Q)./$< 1 1 1 > /dev/null
+	$(Q)./$< 1 1 1 1 > /dev/null
 	$(Q)echo "$< OK"
 
 static-build-cmd = ! $$(STATIC_CHECK) || $(1) \

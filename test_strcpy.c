@@ -20,19 +20,25 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "test_common.c"
 
 int main(int argc, char ** argv) {
   char buffer[3] = {0};
+  int ret = 0;
 #ifdef STATIC_CHECK
   strcpy(buffer, "bonjour");
 #endif
   char from[] = "bonjour";
-  from[argc] = 0;
-  strcpy(buffer, from);
-  puts(buffer);
+  if (argc > 1) {
+    CHK_FAIL_START
+    from[argc] = 0;
+    strcpy(buffer, from);
+    CHK_FAIL_END
+    puts(buffer);
+  }
 
   from[3] = 0;
   strcpy(buffer, "yo");
   puts(buffer);
-  return 0;
+  return ret;
 }

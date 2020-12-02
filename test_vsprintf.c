@@ -26,6 +26,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include "test_common.c"
 
 int aux0(int argc, char ** argv, ...) {
   va_list ap;
@@ -39,12 +40,17 @@ int aux0(int argc, char ** argv, ...) {
 }
 int aux1(int argc, char ** argv, ...) {
   va_list ap;
+  int ret = 0;
   va_start(ap, argv);
   char buffer[3];
-  vsprintf(buffer, "!%d", ap);
+  if (argc > 1) {
+    CHK_FAIL_START
+    vsprintf(buffer, "!%d", ap);
+    CHK_FAIL_END
+  }
   puts(buffer);
   va_end(ap);
-  return 0;
+  return ret;
 }
 int aux2(int argc, char ** argv, ...) {
   va_list ap;
