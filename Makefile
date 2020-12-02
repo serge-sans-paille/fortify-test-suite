@@ -16,34 +16,25 @@ DEFAULT_CFLAGS = $(CFLAGS) -O1 $(USE_SYSROOT)
 CFLAGS_STATIC=$(DEFAULT_CFLAGS) -DSTATIC_CHECK -Werror
 STATIC_CHECK ?= false
 COMPILERS = gcc clang
+FORTIFY_LEVELS = 1 2
 
-TARGETS=test_memcpy test_memmove test_mempcpy test_memset test_snprintf test_sprintf test_stpcpy test_strcat test_strcpy test_strncat test_strncpy test_vsnprintf test_vsprintf
+TARGETS=memcpy memmove mempcpy memset snprintf sprintf stpcpy strcat strcpy strncat strncpy vsnprintf vsprintf
 
 check:$(patsubst %,check-%,$(COMPILERS))
 
-check-target = check-$(1):$(patsubst test_%,run_%.$(1),$(TARGETS)); \
+define check-target =
+check-$(1):$(patsubst %,run_%.$(1),$(TARGETS))
 	@echo "===== $$@ OK ====="
+endef
 
-$(call check-target,gcc)
-$(call check-target,clang)
+$(foreach c,$(COMPILERS),$(eval $(call check-target,$(c))))
 
-check-single = test-$(1):$(foreach c,$(COMPILERS),run_$(1).$(c))
+# Per-function test targets, e.g. test-memcpy.
+define check-single =
+test-$(1):$(foreach c,$(COMPILERS),run_$(1).$(c))
+endef
 
-$(call check-single,memcpy)
-$(call check-single,memmove)
-$(call check-single,mempcpy)
-$(call check-single,memset)
-$(call check-single,snprintf)
-$(call check-single,sprintf)
-$(call check-single,stpcpy)
-$(call check-single,strcat)
-$(call check-single,strcpy)
-$(call check-single,strncat)
-$(call check-single,strncpy)
-$(call check-single,vsnprintf)
-$(call check-single,vsprintf)
-
-FORTIFY_LEVELS = 1 2
+$(foreach t,$(TARGETS),$(eval $(call check-single,$(t))))
 
 run_%:$(foreach l,$(FORTIFY_LEVELS),runone_%_$(l))
 	true
@@ -60,14 +51,15 @@ static-build-cmd = ! $$(STATIC_CHECK) || $(1) \
 
 build-cmd = $(1) -D_FORTIFY_SOURCE=$(2) $$(DEFAULT_CFLAGS) $$< -o $$@
 
-build-target = test_%.$(1)_$(2):test_%.c; \
-	$(Q)$(call static-build-cmd,$(1),$(2)) \
-	$(call build-cmd,$(1),$(2))
+# Targets for all combinations of compiler and fortification levels.
+define build-target =
+test_%.$(1)_$(2):test_%.c
+	$(Q)$(call static-build-cmd,$(1),$(2))
+	$(Q)$(call build-cmd,$(1),$(2))
+endef
 
-$(call build-target,gcc,1)
-$(call build-target,gcc,2)
-$(call build-target,clang,1)
-$(call build-target,clang,2)
+$(foreach c,$(COMPILERS),$(foreach l,$(FORTIFY_LEVELS),$(eval \
+	$(call build-target,$(c),$(l)))))
 
 clean:
 	for target in $(TARGETS); do $(RM) $(patsubst %,$$target.%,$(COMPILERS)) ; done
