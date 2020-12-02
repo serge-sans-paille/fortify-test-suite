@@ -6,7 +6,7 @@ else
 	USE_SYSROOT =
 endif
 
-DEFAULT_CFLAGS = $(CFLAGS) -D_FORTIFY_SOURCE -O1 $(USE_SYSROOT)
+DEFAULT_CFLAGS = $(CFLAGS) -O1 $(USE_SYSROOT)
 CFLAGS_STATIC=$(DEFAULT_CFLAGS) -DSTATIC_CHECK -Werror
 STATIC_CHECK ?= false
 COMPILERS = gcc clang
@@ -37,19 +37,31 @@ $(call check-single,strncpy)
 $(call check-single,vsnprintf)
 $(call check-single,vsprintf)
 
-run_%:test_%
+FORTIFY_LEVELS = 1 2
+
+run_%:$(foreach l,$(FORTIFY_LEVELS),runone_%_$(l))
+	true
+
+runone_%:test_%
 	./$<
 	! ./$< 1 1 1
 	! ./$< 1 1 1 1
 	@echo "$< OK"
 
-build-target = test_%.$(1):test_%.c; \
-	! $(STATIC_CHECK) || $(1) $(CFLAGS_STATIC) $< 2>&1 \
-		| grep ' error: '; \
-	$(1) $(DEFAULT_CFLAGS) $$< -o $$@;
+static-build-cmd = ! $$(STATIC_CHECK) || $(1) \
+		-D_FORTIFY_SOURCE=$(2) $$(CFLAGS_STATIC) $$< 2>&1 \
+		| grep ' error: ';
 
-$(call build-target,gcc)
-$(call build-target,clang)
+build-cmd = $(1) -D_FORTIFY_SOURCE=$(2) $$(DEFAULT_CFLAGS) $$< -o $$@
+
+build-target = test_%.$(1)_$(2):test_%.c; \
+	$(call static-build-cmd,$(1),$(2)) \
+	$(call build-cmd,$(1),$(2))
+
+$(call build-target,gcc,1)
+$(call build-target,gcc,2)
+$(call build-target,clang,1)
+$(call build-target,clang,2)
 
 clean:
 	for target in $(TARGETS); do $(RM) $(patsubst %,$$target.%,$(COMPILERS)) ; done
