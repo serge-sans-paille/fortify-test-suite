@@ -31,7 +31,7 @@
  */
 
 int main(int argc, char ** argv) {
-  char buffer[3] = {0};
+  DECL_BUF(buffer, 3)
 #ifdef STATIC_CHECK
   snprintf(buffer, 4, "%d", argc);
 #endif

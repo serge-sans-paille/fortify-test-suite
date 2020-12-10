@@ -26,7 +26,7 @@
  */
 
 int aux(int argc, char ** argv, ...) {
-  char buffer[3] = {0};
+  DECL_BUF(buffer, 3)
   va_list ap;
   va_start(ap, argv);
 

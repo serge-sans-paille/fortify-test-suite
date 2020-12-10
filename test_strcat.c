@@ -46,7 +46,7 @@
  */
 
 int main(int argc, char ** argv) {
-  char buffer[3] = {0};
+  DECL_BUF(buffer, 3)
 #ifdef STATIC_CHECK
   strcat(buffer, "bonjour");
 #endif
@@ -55,7 +55,10 @@ int main(int argc, char ** argv) {
   if(argc == 5)
   {
     CHK_FAIL_START
-    char buffer[3] = {'a', 'b', 'c'};
+    DECL_BUF(buffer, 3)
+    buffer[0] = 'a';
+    buffer[1] = 'b';
+    buffer[2] = 'c';
     strcat(buffer, from);
     puts(buffer);
     CHK_FAIL_END
@@ -66,7 +69,7 @@ int main(int argc, char ** argv) {
   if(argc > 1 && argc != 5)
   {
     CHK_FAIL_START
-    char buffer[3] = {0};
+    DECL_BUF(buffer, 3)
     strcat(buffer, from);
     puts(buffer);
     CHK_FAIL_END
@@ -74,7 +77,7 @@ int main(int argc, char ** argv) {
 
 
   {
-    char buffer[3] = {0};
+    DECL_BUF(buffer, 3)
     from[3] = 0;
     strcat(buffer, "yo");
     puts(buffer);

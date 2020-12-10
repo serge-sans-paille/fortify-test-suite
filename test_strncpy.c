@@ -21,21 +21,21 @@
  */
 
 int main(int argc, char ** argv) {
-  char buffer[3] = {0};
+  DECL_BUF(buffer, 3)
 #ifdef STATIC_CHECK
   strncpy(buffer, "bonjour", 4);
 #endif
 
   if (argc > 1) {
     CHK_FAIL_START
-    char buffer[3] = {0};
+    DECL_BUF(buffer, 3)
     strncpy(buffer, "bonjour", argc);
     puts(buffer);
     CHK_FAIL_END
   }
 
   {
-    char buffer[3] = {0};
+    DECL_BUF(buffer, 3)
     strncpy(buffer, "yo", 3);
     puts(buffer);
   }
