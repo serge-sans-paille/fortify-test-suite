@@ -32,7 +32,6 @@
 
 int main(int argc, char ** argv) {
   char buffer[3] = {0};
-  int ret = 0;
 #ifdef STATIC_CHECK
   snprintf(buffer, 4, "%d", argc);
 #endif
@@ -44,5 +43,5 @@ int main(int argc, char ** argv) {
     CHK_FAIL_END
   }
   puts(buffer);
-  return 0;
+  return ret;
 }

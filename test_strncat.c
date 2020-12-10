@@ -79,7 +79,6 @@
 
 int main(int argc, char ** argv) {
   char buffer[3] = {0};
-  int ret = 0;
 #ifdef STATIC_CHECK
   strncat(buffer, "bonjour", 4);
 #endif

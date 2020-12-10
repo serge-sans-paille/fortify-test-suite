@@ -40,7 +40,6 @@ int aux0(int argc, char ** argv, ...) {
 }
 int aux1(int argc, char ** argv, ...) {
   va_list ap;
-  int ret = 0;
   va_start(ap, argv);
   char buffer[3];
   if (argc > 1) {

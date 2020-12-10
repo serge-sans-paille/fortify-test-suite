@@ -24,7 +24,6 @@
  */
 
 int main(int argc, char ** argv) {
-  int ret = 0;
   char buffer[3] = {0};
 #ifdef STATIC_CHECK
   memcpy(buffer, "yo", 4);
