@@ -22,7 +22,6 @@
 
 int main(int argc, char ** argv) {
   char buffer[3] = {0};
-  int ret = 0;
 #ifdef STATIC_CHECK
   strncpy(buffer, "bonjour", 4);
 #endif

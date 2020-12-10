@@ -27,7 +27,6 @@
 
 int aux(int argc, char ** argv, ...) {
   char buffer[3] = {0};
-  int ret = 0;
   va_list ap;
   va_start(ap, argv);
 

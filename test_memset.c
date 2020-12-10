@@ -29,7 +29,6 @@
 
 int main(int argc, char ** argv) {
   char buffer[3] = {0};
-  int ret = 0;
 #ifdef STATIC_CHECK
   memset(buffer, argc, 0);
   memset(buffer, 0, 4);

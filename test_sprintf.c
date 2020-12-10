@@ -35,7 +35,6 @@
  */
 
 int main(int argc, char ** argv) {
-  int ret = 0;
   char buffer[3];
 #ifdef STATIC_CHECK
   sprintf(buffer, "hello");
