@@ -63,7 +63,7 @@ int main(int argc, char ** argv) {
 
   from[argc] = 0;
 
-  if(argc != 5)
+  if(argc > 1 && argc != 5)
   {
     CHK_FAIL_START
     char buffer[3] = {0};
@@ -79,5 +79,5 @@ int main(int argc, char ** argv) {
     strcat(buffer, "yo");
     puts(buffer);
   }
-  return 0;
+  return ret;
 }
