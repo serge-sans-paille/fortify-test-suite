@@ -1,7 +1,15 @@
 PKGNAME=fortify-test-suite
 
 ifdef SYSROOT
-	USE_SYSROOT = -isysroot $(SYSROOT)
+	# We can't just use --sysroot or -isysroot because clang and gcc don't
+	# agree on how those options should behave.  Instead just use -I and -L
+	# since that covers our use case of getting the right glibc headers and
+	# libs.  It's just that we won't be able to test any startup code
+	# changes, but it's not something _FORTIFY_SOURCE will touch anyway.
+	USE_SYSROOT = -isystem $(SYSROOT)/usr/include \
+		      -isystem $(SYSROOT)/include \
+		      -L$(SYSROOT)/lib64 -L$(SYSROOT)/lib \
+		      -L$(SYSROOT)/usr/lib64 -L$(SYSROOT)/usr/lib
 else
 	USE_SYSROOT =
 endif
