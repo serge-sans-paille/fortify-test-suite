@@ -78,14 +78,19 @@
 #include "test_common.c"
 
 int main(int argc, char ** argv) {
-  char buffer[3] = {0};
+  DECL_BUF(buffer, 3)
 #ifdef STATIC_CHECK
   strncat(buffer, "bonjour", 4);
 #endif
   if(argc >= 5)
   {
     CHK_FAIL_START
-    char buffer[5] = {'a', 'b', 'c', 'd', argc};
+    DECL_BUF(buffer, 5)
+    buffer[0] = 'a';
+    buffer[1] = 'b';
+    buffer[2] = 'c';
+    buffer[3] = 'd';
+    buffer[4] = argc;
     strncat(buffer, "bonjour", argc);
     CHK_FAIL_END
     puts(buffer);
@@ -94,14 +99,14 @@ int main(int argc, char ** argv) {
   if(argc > 1 && argc < 5)
   {
     CHK_FAIL_START
-    char buffer[3] = {0};
+    DECL_BUF(buffer, 3)
     strncat(buffer, "bonjour", argc);
     puts(buffer);
     CHK_FAIL_END
   }
 
   {
-    char buffer[3] = {0};
+    DECL_BUF(buffer, 3)
     strncat(buffer, "yo", 3);
     puts(buffer);
   }

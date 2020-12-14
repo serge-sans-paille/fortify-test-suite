@@ -24,16 +24,25 @@ DEFAULT_CFLAGS = $(CFLAGS) -O1 $(USE_SYSROOT)
 CFLAGS_STATIC=$(DEFAULT_CFLAGS) -DSTATIC_CHECK -Werror
 STATIC_CHECK ?= false
 COMPILERS = gcc clang
-FORTIFY_LEVELS = 1 2
+FORTIFY_LEVELS = 1 2 3
+
+RESULTFILE = fortify.result
 
 TARGETS=memcpy memmove mempcpy memset snprintf sprintf stpcpy stpncpy strcat \
 	strcpy strncat strncpy vsnprintf vsprintf
 
 check:$(patsubst %,check-%,$(COMPILERS)) test_common.c
 
+$(RESULTFILE):
+	$(Q)cat /dev/null > $@
+
 define check-target =
-check-$(1):$(patsubst %,run_%.$(1),$(TARGETS))
-	@echo "===== $$@ OK ====="
+check-$(1):$(RESULTFILE) $(patsubst %,run_%.$(1),$(TARGETS))
+	$(Q){ echo "===== $$@ DONE ====="; \
+	      echo -n "PASSED: "; grep OK $(RESULTFILE) | wc -l; \
+	      echo -n "FAILED: "; grep FAILED $(RESULTFILE) | wc -l; \
+	    echo "===================="; }
+	$(Q)$(RM) $(RESULTFILE)
 endef
 
 $(foreach c,$(COMPILERS),$(eval $(call check-target,$(c))))
@@ -49,10 +58,11 @@ run_%:$(foreach l,$(FORTIFY_LEVELS),runone_%_$(l))
 	@true
 
 runone_%:test_%
-	$(Q)./$< > /dev/null
-	$(Q)./$< 1 1 1 > /dev/null
-	$(Q)./$< 1 1 1 1 > /dev/null
-	$(Q)echo "$< OK"
+	$(Q){ ./$< > /dev/null; \
+	      ./$< 1 1 1 > /dev/null; \
+	      ./$< 1 1 1 1 > /dev/null; } \
+	    && { echo "$< OK" | tee -a $(RESULTFILE); } \
+	    || { echo "$< FAILED" | tee -a $(RESULTFILE); }
 
 static-build-cmd = ! $$(STATIC_CHECK) || $(1) \
 		-D_FORTIFY_SOURCE=$(2) $$(CFLAGS_STATIC) $$< 2>&1 \
@@ -73,6 +83,7 @@ $(foreach c,$(COMPILERS),$(foreach l,$(FORTIFY_LEVELS),$(eval \
 clean:
 	for target in $(TARGETS); do $(RM) $(patsubst %,test_$$target.%*,$(COMPILERS)) ; done
 	$(RM) $(PKGNAME).tgz
+	$(RM) $(RESULTFILE)
 
 dist: $(PKGNAME).tgz
 

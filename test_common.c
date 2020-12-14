@@ -58,3 +58,10 @@ set_fortify_handler (void)
       chk_fail_ok = 0;                          \
       FAIL ();                                  \
     }
+
+#if _FORTIFY_SOURCE == 3
+#include <stdlib.h>
+#define DECL_BUF(_b,_s) static volatile size_t sz = _s; char *_b = malloc(sz);
+#else
+#define DECL_BUF(_b,_s) char _b[_s] = {0};
+#endif

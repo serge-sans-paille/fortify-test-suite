@@ -23,7 +23,7 @@
 #include "test_common.c"
 
 int main(int argc, char ** argv) {
-  char buffer[3] = {0};
+  DECL_BUF(buffer, 3)
 #ifdef STATIC_CHECK
   strcpy(buffer, "bonjour");
 #endif

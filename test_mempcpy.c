@@ -23,7 +23,7 @@
  */
 
 int main(int argc, char ** argv) {
-  char buffer[3] = {0};
+  DECL_BUF(buffer, 3)
 #ifdef STATIC_CHECK
   mempcpy(buffer, "yo", 4);
 #endif

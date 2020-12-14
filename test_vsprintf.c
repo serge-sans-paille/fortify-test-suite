@@ -31,7 +31,7 @@
 int aux0(int argc, char ** argv, ...) {
   va_list ap;
   va_start(ap, argv);
-  char buffer[3];
+  DECL_BUF(buffer, 3)
 #ifdef STATIC_CHECK
   vsprintf(buffer, "bonjour", ap);
 #endif
@@ -41,7 +41,7 @@ int aux0(int argc, char ** argv, ...) {
 int aux1(int argc, char ** argv, ...) {
   va_list ap;
   va_start(ap, argv);
-  char buffer[3];
+  DECL_BUF(buffer, 3)
   if (argc > 1) {
     CHK_FAIL_START
     vsprintf(buffer, "!%d", ap);
@@ -54,7 +54,7 @@ int aux1(int argc, char ** argv, ...) {
 int aux2(int argc, char ** argv, ...) {
   va_list ap;
   va_start(ap, argv);
-  char buffer[3];
+  DECL_BUF(buffer, 3)
   vsprintf(buffer, "%d", ap);
   puts(buffer);
   va_end(ap);
