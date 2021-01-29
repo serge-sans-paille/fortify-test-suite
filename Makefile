@@ -31,9 +31,15 @@ TARGETS=memcpy memmove mempcpy memset snprintf sprintf stpcpy stpncpy strcat \
 
 check:$(patsubst %,check-%,$(COMPILERS)) test_common.c
 
+check-%:check-%.result
+	$(Q)cat $^
+
 define check-target =
-check-$(1):$(patsubst %,run_%.$(1),$(TARGETS))
-	@echo "===== $$@ OK ====="
+check-$(1).result: $(patsubst %,run_%.$(1),$(TARGETS))
+	$(Q){ echo "===== $$@ SUMMARY ====="; \
+	      printf "PASSED: "; cat *$(1)*.test-result | grep -c OK; \
+	      printf "FAILED: "; cat *$(1)*.test-result | grep -c FAILED; \
+	      true; } > $$@
 endef
 
 $(foreach c,$(COMPILERS),$(eval $(call check-target,$(c))))
@@ -45,14 +51,15 @@ endef
 
 $(foreach t,$(TARGETS),$(eval $(call check-single,$(t))))
 
-run_%:$(foreach l,$(FORTIFY_LEVELS),runone_%_$(l))
+run_%:$(foreach l,$(FORTIFY_LEVELS),runone_%_$(l).test-result)
 	@true
 
-runone_%:test_%
-	$(Q)./$< > /dev/null
-	$(Q)./$< 1 1 1 > /dev/null
-	$(Q)./$< 1 1 1 1 > /dev/null
-	$(Q)echo "$< OK"
+runone_%.test-result:test_%
+	$(Q){ ./$< > /dev/null; \
+	      ./$< 1 1 1 > /dev/null; \
+	      ./$< 1 1 1 1 > /dev/null; } \
+	    && { echo "$< OK" | tee $@; } \
+	    || { echo "$< FAILED" | tee $@; }
 
 static-build-cmd = ! $$(STATIC_CHECK) || $(1) \
 		-D_FORTIFY_SOURCE=$(2) $$(CFLAGS_STATIC) $$< 2>&1 \
@@ -73,6 +80,7 @@ $(foreach c,$(COMPILERS),$(foreach l,$(FORTIFY_LEVELS),$(eval \
 clean:
 	for target in $(TARGETS); do $(RM) $(patsubst %,test_$$target.%*,$(COMPILERS)) ; done
 	$(RM) $(PKGNAME).tgz
+	$(RM) *.result
 
 dist: $(PKGNAME).tgz
 
