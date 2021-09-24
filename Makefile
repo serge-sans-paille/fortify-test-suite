@@ -22,7 +22,7 @@ endif
 
 DEFAULT_CFLAGS = $(CFLAGS) -O1 $(USE_SYSROOT)
 CFLAGS_STATIC=$(DEFAULT_CFLAGS) -DSTATIC_CHECK -Werror
-STATIC_CHECK ?= false
+STATIC_CHECK ?= true
 COMPILERS = gcc clang
 FORTIFY_LEVELS = 1 2
 
@@ -61,9 +61,10 @@ runone_%.test-result:test_%
 	    && { echo "$< OK" | tee $@; } \
 	    || { echo "$< FAILED" | tee $@; }
 
-static-build-cmd = ! $$(STATIC_CHECK) || $(1) \
-		-D_FORTIFY_SOURCE=$(2) $$(CFLAGS_STATIC) $$< 2>&1 \
-		| grep ' error: ';
+static-build-cmd = ! $$(STATIC_CHECK) || \
+    ! grep -q STATIC_CHECK $$< || \
+	$(1) -D_FORTIFY_SOURCE=$(2) $$(CFLAGS_STATIC) $$< 2>&1 \
+		| grep ' error: ' || { echo "$$* FAILED" | tee test_$$*; }
 
 build-cmd = $(1) -D_FORTIFY_SOURCE=$(2) $$(DEFAULT_CFLAGS) $$< -o $$@
 
