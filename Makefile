@@ -26,8 +26,22 @@ STATIC_CHECK ?= true
 COMPILERS = gcc clang
 FORTIFY_LEVELS = 1 2
 
-TARGETS=memcpy memmove mempcpy memset snprintf sprintf stpcpy stpncpy strcat \
-	strcpy strncat strncpy vsnprintf vsprintf wmemcpy
+TARGETS=memcpy \
+		memmove \
+		mempcpy \
+		memset \
+		open \
+		snprintf \
+		sprintf \
+		stpcpy \
+		stpncpy \
+		strcat \
+		strcpy \
+		strncat \
+		strncpy \
+		vsnprintf \
+		vsprintf \
+		wmemcpy
 
 check:$(patsubst %,check-%,$(COMPILERS)) test_common.c
 
